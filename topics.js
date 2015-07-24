@@ -1,10 +1,16 @@
 var dbHelper = require('./db-helper');
+var mqtt = require('mqtt');
 
 var PREFIX = 'test_kw_';
 var USER_ID_REGEX = /(\w+)/;
 
+var mqttClient = undefined;
 
 module.exports = {
+
+    setClient: function(client) {
+        mqttClient = client;
+    },
 
     // remember to subscribe to the topics that you are trying to handle here
     handle: function(topic, message) {
@@ -37,6 +43,8 @@ function handleUsers(topicParts, message) {
 
 function handleOnline(message) {
     console.log('handleOnline: ' + message);
+    mqttClient.publish('test_kw_users/online', dbHelper.);
+
 }
 
 

@@ -8,12 +8,7 @@ var DATABASE_CONFIGURATION = {
     host:     '10.132.15.29',
     port:      5432
 };
-
-var Transaction = require ('pg-transaction');
-
-
 var client = new pg.Client(DATABASE_CONFIGURATION);
-
 
 
 var TABLE_NAME = 'test_kw_users';
@@ -28,9 +23,21 @@ var QUERIES = {
                ' SET last_seen=($1), online=($2) WHERE name=($3)'
 }
 
-var tx = new Transaction(client);
+
 
 module.exports = {
+
+	getUsers: function() {
+		if(client != undefined) {
+			client.query(QUERIES.GET_USERS, function(err, result) {
+				if(err) {
+					console.log(err);
+				} else {
+					return result;
+				}
+			});
+		}
+	}
 
 	closeDB: function () {
 	    if(client != undefined) {
@@ -38,8 +45,7 @@ module.exports = {
 	        console.log('DB connection closed');
 	    }
 	},
-	
-	
+
 
 	dbConnect: function () {
 	    client.connect(function(err) {
@@ -55,22 +61,20 @@ module.exports = {
 	// should be upgraded with usage of transaction or upsert functionality
 	handleDBInsert: function (login, name) {
 	    if(client != undefined) {
-			tx.begin();
-	        tx.query(QUERIES.GET_USER, [login], function(err, result) {
+	        client.query(QUERIES.GET_USER, [login], function(err, result) {
 	            if(err) {console.log('GET_USER: ' + err);}
 	            if(result.rowCount == 0) {
 	                //insert
-	                tx.query(QUERIES.POST_USER, [null, true, login, name], function(err) {
+	                client.query(QUERIES.POST_USER, [null, true, login, name], function(err) {
 	                    if(err) {console.log('POST_USER: ' + err);}
 	                });
 	            } else {
 	                //update
-	                tx.query(QUERIES.PUT_USER, [null, true, login], function(err) {
+	                client.query(QUERIES.PUT_USER, [null, true, login], function(err) {
 	                    if(err) {console.log('PUT_USER: ' + err);}
 	                });
 	            }
 	        });
-			tx.commit();
 	    }
 	},
 

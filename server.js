@@ -24,8 +24,18 @@ var RECONNECTION_ATTEMPTS_LIMIT = 5;
 // set callbacks for mqtt client
 mqttClient.on('connect', onMqttConnect);
 mqttClient.on('offline', onMqttOfflineClient);
-mqttClient.on('message', topics.handle);
-mqttClient.on('error', onMqttError);
+mqttClient.on('message', onMqttMessage);
+mqttClient.on('error',   onMqttError);
+
+
+function onMqttMessage() {
+	if(mqttClient != undefined) {
+		topics.setClient(mqttClient);
+		topics.handle();
+	} else {
+		console.log('MQTT: message cannot be handled: client is not connected');
+	}
+}
 
 
 function onMqttOfflineClient() {
