@@ -37,7 +37,7 @@ module.exports = {
 				}
 			});
 		}
-	}
+	},
 
 	closeDB: function () {
 	    if(client != undefined) {

@@ -42,9 +42,12 @@ function handleUsers(topicParts, message) {
 
 
 function handleOnline(message) {
-    console.log('handleOnline: ' + message);
-    mqttClient.publish('test_kw_users/online', dbHelper.);
-
+    if(message == 'get') {
+        console.log('handleOnline');
+        mqttClient.publish('test_kw_users/online', dbHelper.getUsers());
+    } else {
+        console.log('handleOnline: bad request: ' + message);
+    }
 }
 
 

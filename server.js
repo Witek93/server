@@ -28,10 +28,10 @@ mqttClient.on('message', onMqttMessage);
 mqttClient.on('error',   onMqttError);
 
 
-function onMqttMessage() {
+function onMqttMessage(topic, message) {
 	if(mqttClient != undefined) {
 		topics.setClient(mqttClient);
-		topics.handle();
+		topics.handle(topic, message);
 	} else {
 		console.log('MQTT: message cannot be handled: client is not connected');
 	}
