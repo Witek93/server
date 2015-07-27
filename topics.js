@@ -1,5 +1,8 @@
 var dbHelper = require('./db-helper');
 var mqtt = require('mqtt');
+var events = require('events');
+
+var eventEmitter = new events.EventEmitter();
 
 var PREFIX = 'test_kw_';
 var USER_ID_REGEX = /(\w+)/;
@@ -28,7 +31,6 @@ module.exports = {
 }
 
 
-
 function handleUsers(topicParts, message) {
     console.log('handleUsers:' + topicParts);
     if(topicParts.length > 0) {
@@ -44,9 +46,21 @@ function handleUsers(topicParts, message) {
 function handleOnline(message) {
     if(message == 'get') {
         console.log('handleOnline');
-        mqttClient.publish('test_kw_users/online', dbHelper.getUsers());
+        dbHelper.getUsers(eventEmitter);
     } else {
         console.log('handleOnline: bad request: ' + message);
+    }
+}
+
+eventEmitter.on('returnUsers', returnUsers);
+
+function returnUsers(users) {
+    console.log(users);
+    if(mqttClient != undefined) {
+        mqttClient.publish('test_kw_users/online', JSON.stringify(users));
+        console.log('mqttClient publishing...\n');
+    } else {
+        console.log('mqttClient undefined');
     }
 }
 
