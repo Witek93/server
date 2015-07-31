@@ -57,7 +57,7 @@ eventEmitter.on('returnUsers', returnUsers);
 function returnUsers(users) {
     console.log(users);
     if(mqttClient != undefined) {
-        mqttClient.publish('test_kw_users/online', JSON.stringify(users));
+        mqttClient.publish('test_kw_users/online', JSON.stringify(users), {qos: 2, retain: true});
         console.log('mqttClient publishing...\n');
     } else {
         console.log('mqttClient undefined');
